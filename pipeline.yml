@@ -1,0 +1,70 @@
+name: lab_8_test_409947
+
+on:
+  push:
+    branches:
+      - lab8/409947
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install libs for testing
+        run: |
+          pip  install pytest 
+      - name: Install dependencies
+        run: |
+          cd ./env_409947 && python -m pip install -r requirements.txt
+      - name: Run unit tests
+        run: |
+          cd ./env_409947/main && pytest calculator_test.py
+
+  functional_tests:
+    needs: unit_tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install libs for testing
+        run: |
+          pip  install pytest 
+      - name: Install dependencies
+        run: |
+          cd ./env_409947 && python -m pip install -r requirements.txt
+      - name: Run app
+        run: |
+          cd ./env_409947/main && nohup python app.py &
+      - name: Sleep
+        run: |
+          sleep 10
+      - name: Run functional tests
+        run: |
+          cd ./env_409947/main && pytest app_test.py
+
+  deploy:
+    needs: functional_tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME_409947 }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN_409947 }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./env_409947
+          file: ./env_409947/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME_409947 }}/lab8:latest
+            ${{ secrets.DOCKER_HUB_USERNAME_409947 }}/lab8:${{ github.sha }}
