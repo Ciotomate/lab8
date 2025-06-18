@@ -75,3 +75,4 @@ Należy pobrać obraz na nasz lokalny komputer i go uruchomić (uwaga konieczne 
 - Dlaczego należy korzystać z przygotowanych magazynów haseł 
 
 
+trigger
