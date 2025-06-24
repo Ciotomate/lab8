@@ -1,0 +1,11 @@
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.terraform*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
